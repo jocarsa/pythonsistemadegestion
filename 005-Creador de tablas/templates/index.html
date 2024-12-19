@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Company Dashboard</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    {% if logged_in %}
+        <header>
+            <h1>Welcome, {{ company_name }}!</h1>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </header>
+        <main>
+            <nav>
+                <h2>Your Tables</h2>
+                <ul>
+                    {% for table in tables %}
+                        <li>{{ table }}</li>
+                    {% endfor %}
+                </ul>
+            </nav>
+            <section class="dashboard">
+                <h2>Create a New Table</h2>
+                <form action="{{ url_for('create_table') }}" method="post">
+                    <input type="text" name="table_name" placeholder="Table Name" required>
+                    <div id="columns-container">
+                        <div class="column-definition">
+                            <input type="text" name="columns" placeholder="Column Name" required>
+                            <select name="data_types">
+                                <option value="TEXT">TEXT</option>
+                                <option value="INTEGER">INTEGER</option>
+                                <option value="REAL">REAL</option>
+                                <option value="BLOB">BLOB</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" id="add-column">Add Column</button>
+                    <button type="submit">Create Table</button>
+                </form>
+            </section>
+        </main>
+    {% else %}
+        <div class="formularios">
+            <h1>Welcome! Please login or sign up.</h1>
+            <div class="form-container">
+                <h2>Sign Up</h2>
+                <form action="{{ url_for('signup') }}" method="post">
+                    <input type="email" name="signup_email" placeholder="Email" required>
+                    <input type="password" name="signup_password" placeholder="Password" required>
+                    <input type="text" name="signup_company_name" placeholder="Company Name" required>
+                    <button type="submit">Sign Up</button>
+                </form>
+            </div>
+            <div class="form-container">
+                <h2>Login</h2>
+                <form action="{{ url_for('login') }}" method="post">
+                    <input type="email" name="login_email" placeholder="Email" required>
+                    <input type="password" name="login_password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+        document.getElementById('add-column').addEventListener('click', () => {
+            const container = document.getElementById('columns-container');
+            const columnDiv = document.createElement('div');
+            columnDiv.className = 'column-definition';
+            columnDiv.innerHTML = `
+                <input type="text" name="columns" placeholder="Column Name" required>
+                <select name="data_types">
+                    <option value="TEXT">TEXT</option>
+                    <option value="INTEGER">INTEGER</option>
+                    <option value="REAL">REAL</option>
+                    <option value="BLOB">BLOB</option>
+                </select>
+            `;
+            container.appendChild(columnDiv);
+        });
+    </script>
+</body>
+</html>

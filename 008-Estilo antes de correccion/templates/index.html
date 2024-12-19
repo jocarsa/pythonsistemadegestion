@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Company Dashboard</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    {% if logged_in %}
+        <header>
+            <h1>Bienvenidos, {{ company_name }}!</h1>
+            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+        </header>
+        <main>
+            <nav>
+                <h2>Tablas</h2>
+                
+                    {% for table in tables %}
+                    <button id="create-table-btn">
+                        <a href="{{ url_for('table_view', table_name=table) }}">
+                            <button>{{ table }}</button>
+                    {% endfor %}
+                
+                <button id="create-table-btn">Crear nueva tabla</button>
+            </nav>
+            <section class="dashboard">
+                {% if table_name %}
+                    <h2>Table: {{ table_name }}</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                    <th>{{ column }}</th>
+                                {% endfor %}
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td>{{ cell }}</td>
+                                    {% endfor %}
+                                    <td>
+                                        <form action="{{ url_for('table_view', table_name=table_name) }}" method="post" style="display:inline;">
+                                            <input type="hidden" name="row_id" value="{{ row[0] }}">
+                                            <button type="submit" name="action" value="delete">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h3>Add Row</h3>
+                    <form action="{{ url_for('table_view', table_name=table_name) }}" method="post">
+                        {% for column in columns[1:] %}
+                            <input type="text" name="values" placeholder="{{ column }}">
+                        {% endfor %}
+                        <button type="submit" name="action" value="insert">Insert</button>
+                    </form>
+                {% else %}
+                    <h2>Crea una tabla o selecciona tabla existente</h2>
+                {% endif %}
+            </section>
+        </main>
+    {% else %}
+        <div class="formularios">
+            <img src="static/logo.svg">
+            <h1>jocarsa | Teal</h1>
+            <h2>Inicia sesión o regístrate</h2>
+            <div class="form-container">
+                <h2>Registrate</h2>
+                <form action="{{ url_for('signup') }}" method="post">
+                    <input type="email" name="signup_email" placeholder="Email" required>
+                    <input type="password" name="signup_password" placeholder="Contraseña" required>
+                    <input type="text" name="signup_company_name" placeholder="Nombre de la empresa" required>
+                    <button type="submit">Registrate</button>
+                </form>
+            </div>
+            <div class="form-container">
+                <h2>Inicia sesión</h2>
+                <form action="{{ url_for('login') }}" method="post">
+                    <input type="email" name="login_email" placeholder="Email" required>
+                    <input type="password" name="login_password" placeholder="Contraseña" required>
+                    <button type="submit">Inicia sesión</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+        document.getElementById('create-table-btn').addEventListener('click', () => {
+            window.location.href = '{{ url_for('index') }}#create-table-form';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table View: {{ table_name }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Table: {{ table_name }}</h1>
+        <a href="{{ url_for('index') }}">Volver</a>
+    </header>
+    <main>
+        <nav>
+            <h2>Tablas</h2>
+            <ul>
+                {% for table in tables %}
+                    <li><a href="{{ url_for('table_view', table_name=table) }}">{{ table }}</a></li>
+                {% endfor %}
+            </ul>
+            <button id="create-table-btn">Crea nueva tabla</button>
+        </nav>
+        <section class="dashboard">
+            <h2>Registros en {{ table_name }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            {% for column in columns %}
+                                <td>{{ row[column] }}</td>
+                            {% endfor %}
+                            <td>
+                                <form action="{{ url_for('table_view', table_name=table_name) }}" method="post" style="display:inline;">
+                                    <input type="hidden" name="row_id" value="{{ row['id'] }}">
+                                    <button type="submit" name="action" value="delete">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h3>Añadir registro</h3>
+            <form action="{{ url_for('table_view', table_name=table_name) }}" method="post">
+                {% for column in columns[1:] %}
+                    <input type="text" name="values" placeholder="{{ column }}" required>
+                {% endfor %}
+                <button type="submit" name="action" value="insert">Insertar</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('create-table-btn').addEventListener('click', () => {
+            window.location.href = '{{ url_for('index') }}#create-table-form';
+        });
+    </script>
+</body>
+</html>
